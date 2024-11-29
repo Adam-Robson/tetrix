@@ -29,3 +29,21 @@ export const checkCollision = (
   }
   return false; // No collision
 };
+
+export const clearFullLines = (
+  board: Board
+): { newBoard: Board; clearedRows: number } => {
+  const rowsToKeep = board.filter((row) => row.some((cell) => cell === null));
+
+  const clearedRows = board.length - rowsToKeep.length;
+
+  const newBoard: Board = [
+    ...Array.from(
+      { length: clearedRows },
+      (): Row => Array<Cell>(board[0].length).fill(null)
+    ),
+    ...rowsToKeep,
+  ];
+
+  return { newBoard, clearedRows };
+};
