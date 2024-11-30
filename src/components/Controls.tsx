@@ -1,7 +1,7 @@
 import React from "react";
 import "./controls.css";
 
-interface ControlsProps {
+interface IControlsProps {
   running: boolean;
   setRunning: (running: boolean) => void;
   clearedLines: number;
@@ -9,7 +9,7 @@ interface ControlsProps {
   gameOver: boolean;
 }
 
-const Controls: React.FC<ControlsProps> = ({
+const Controls: React.FC<IControlsProps> = ({
   running,
   setRunning,
   clearedLines,
@@ -20,18 +20,33 @@ const Controls: React.FC<ControlsProps> = ({
     if (!gameOver) setRunning(!running);
   };
 
+  const handleStart = () => {
+    setRunning(true);
+  };
+
   return (
     <div className="controls">
-      <p>Lines cleared: {clearedLines}</p>
-      <p>Level: {level}</p>
+      <div className="stats-container">
+        <p>Lines cleared: {clearedLines}</p>
+        <p>Level: {level}</p>
+      </div>
       {gameOver && <div className="game-over">Game Over</div>}
-      <button
-        className="pause-button"
-        onClick={handlePause}
-        disabled={gameOver}
-      >
-        {running ? "Pause" : "Resume"}
-      </button>
+      <div className="buttons-container">
+        <button
+          className="start-button"
+          onClick={handleStart}
+          disabled={running}
+        >
+          Start
+        </button>
+        <button
+          className="pause-button"
+          onClick={handlePause}
+          disabled={gameOver}
+        >
+          {running ? "Pause" : "Resume"}
+        </button>
+      </div>
     </div>
   );
 };

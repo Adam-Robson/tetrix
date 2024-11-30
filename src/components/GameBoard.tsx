@@ -17,16 +17,14 @@ const GameBoard: React.FC = () => {
   const [speed, setSpeed] = useState<number>(1000);
   const [level, setLevel] = useState<number>(1);
   const [lastAnimationFrame, setLastAnimationFrame] = useState<number>(0);
-  const [running, setRunning] = useState<boolean>(true);
+  const [running, setRunning] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [clearedLines, setClearedLines] = useState<number>(0);
-
   const [currentPiece, setCurrentPiece] = useState<{
     shape: number[][];
     color: string;
     position: { x: number; y: number };
   }>({ ...getRandomTetromino(), position: { x: 4, y: 0 } });
-
   const [nextPiece, setNextPiece] = useState<Omit<TTetromino, "position">>(
     getRandomTetromino()
   );
@@ -119,6 +117,7 @@ const GameBoard: React.FC = () => {
       }
 
       if (running) {
+        e.preventDefault();
         if (e.key === "ArrowLeft") movePiece("left");
         if (e.key === "ArrowRight") movePiece("right");
         if (e.key === "ArrowDown") movePiece("down");

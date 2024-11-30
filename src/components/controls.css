@@ -1,25 +1,49 @@
 .controls {
-  background-color: transparent;
-  color: var(--text);
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 20px;
+  align-items: space-between;
+  justify-content: flex-start;
+  gap: 0.6rem;
+  padding: 1.17rem;
+  border: solid 1px peachpuff;
 }
 
-.pause-button {
-  background-color: var(--ii);
-  color: var(--text);
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
+.buttons-container {
+  border: solid 1px peachpuff;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.stats-container {
+  border: solid 1px peachpuff;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.start-button {
+  padding: 0.6rem 1.2rem;
+  font-size: 1.13rem;
   border: none;
   border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .pause-button:disabled {
   cursor: not-allowed;
+}
+
+.start-button:hover,
+.pause-button:hover {
+  background-color: #333;
 }
 
 .game-over {
@@ -27,4 +51,20 @@
   font-size: 20px;
   font-weight: bold;
   margin: 10px 0;
+}
+
+.paused-overlay,
+.game-over-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 2rem;
+  z-index: 10;
 }
