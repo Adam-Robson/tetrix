@@ -1,9 +1,11 @@
 import { SHAPES } from "../constants/tetromino";
-import { Tetromino } from "../types/tetromino";
+import { TTetrominoKey, TTetromino } from "../types/tetromino";
 
-export const getRandomTetromino = (): Tetromino => {
-  const tetrominoKeys = Object.keys(SHAPES) as Tetromino[];
-  return tetrominoKeys[Math.floor(Math.random() * tetrominoKeys.length)];
+export const getRandomTetromino = (): TTetromino => {
+  const tetrominoKeys = Object.keys(SHAPES) as (keyof typeof SHAPES)[];
+  const randomIdx = Math.floor(Math.random() * tetrominoKeys.length);
+  const randomKey: TTetrominoKey = tetrominoKeys[randomIdx];
+  return SHAPES[randomKey];
 };
 
 export const rotateTetromino = (shape: number[][]): number[][] => {

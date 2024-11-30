@@ -1,11 +1,11 @@
-import { Board, Cell, Row } from "../types/board";
+import { TBoard, TCell, TRow } from "../types/board";
 
-export const createEmptyBoard = (): Board =>
-  Array.from({ length: 20 }, (): Row => Array<Cell>(10).fill(null));
+export const createEmptyBoard = (): TBoard =>
+  Array.from({ length: 20 }, (): TRow => Array<TCell>(10).fill(null));
 
 export const checkCollision = (
   shape: number[][],
-  board: Board,
+  board: TBoard,
   position: { x: number; y: number }
 ): boolean => {
   for (let rowIdx = 0; rowIdx < shape.length; rowIdx++) {
@@ -31,16 +31,16 @@ export const checkCollision = (
 };
 
 export const clearFullLines = (
-  board: Board
-): { newBoard: Board; clearedRows: number } => {
+  board: TBoard
+): { newBoard: TBoard; clearedRows: number } => {
   const rowsToKeep = board.filter((row) => row.some((cell) => cell === null));
 
   const clearedRows = board.length - rowsToKeep.length;
 
-  const newBoard: Board = [
+  const newBoard: TBoard = [
     ...Array.from(
       { length: clearedRows },
-      (): Row => Array<Cell>(board[0].length).fill(null)
+      (): TRow => Array<TCell>(board[0].length).fill(null)
     ),
     ...rowsToKeep,
   ];

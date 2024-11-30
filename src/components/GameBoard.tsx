@@ -1,52 +1,32 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Board } from "../types/board";
-import { createEmptyBoard } from "../utils/board";
-import { SHAPES } from "../constants/tetromino";
-import { TetrominoShape } from "../types/tetromino";
+import { useState, useEffect, useCallback } from "react";
+import type { TBoard } from "../types/board";
+import type { TTetromino } from "../types/tetromino";
 import { getRandomTetromino, rotateTetromino } from "../utils/tetromino";
+import { createEmptyBoard } from "../utils/board";
 import { checkCollision } from "../utils/board";
 import { clearFullLines } from "../utils/board";
 import { calculateSpeed } from "../utils/game";
+import PreviewPiece from "./PreviewPiece";
+import "./gameboard.css";
 
-const GameBoard: React.FC = () => {
+export default function GameBoard() {
+  const [board, setBoard] = useState<TBoard>(createEmptyBoard());
   const [speed, setSpeed] = useState<number>(1000);
   const [level, setLevel] = useState<number>(1);
   const [lastAnimationFrame, setLastAnimationFrame] = useState<number>(0);
-  // eslint-disable-next-line
   const [running, setRunning] = useState<boolean>(true);
+  const [gameOver, setGameOver] = useState<boolean>(false);
   const [clearedLines, setClearedLines] = useState<number>(0);
-  const [board, setBoard] = useState<Board>(createEmptyBoard());
+
   const [currentPiece, setCurrentPiece] = useState<{
-    shape: TetrominoShape;
+    shape: number[][];
+    color: string;
     position: { x: number; y: number };
-  }>({
-    shape: SHAPES[getRandomTetromino()],
-    position: { x: 4, y: 0 },
-  });
+  }>({ ...getRandomTetromino(), position: { x: 4, y: 0 } });
 
-  const drawPieceOnBoard = (): Board => {
-    const newBoard = [...board].map((row) => [...row]);
-
-    currentPiece.shape.forEach((row, rowIdx) => {
-      row.forEach((cell, colIdx) => {
-        if (cell !== 0) {
-          const boardY = currentPiece.position.y + rowIdx;
-          const boardX = currentPiece.position.x + colIdx;
-
-          if (
-            boardY >= 0 &&
-            boardY < board.length &&
-            boardX >= 0 &&
-            boardX < board[0].length
-          ) {
-            newBoard[boardY][boardX] = "blue";
-          }
-        }
-      });
-    });
-
-    return newBoard;
-  };
+  const [nextPiece, setNextPiece] = useState<Omit<TTetromino, "position">>(
+    getRandomTetromino()
+  );
 
   const lockPiece = useCallback(() => {
     setBoard((prevBoard) => {
@@ -64,7 +44,7 @@ const GameBoard: React.FC = () => {
               boardX >= 0 &&
               boardX < updatedGameBoard[0].length
             ) {
-              updatedGameBoard[boardY][boardX] = "blue"; // Lock piece color
+              updatedGameBoard[boardY][boardX] = currentPiece.color;
             }
           }
         });
@@ -89,29 +69,34 @@ const GameBoard: React.FC = () => {
       }
     });
 
-    setCurrentPiece({
-      shape: SHAPES[getRandomTetromino()],
-      position: { x: 4, y: 0 },
-    });
-  }, [level, currentPiece]);
+    const newPiece = {
+      ...nextPiece,
+      position: {
+        x: 4,
+        y: 0,
+      },
+    };
+
+    if (checkCollision(newPiece.shape, board, newPiece.position)) {
+      setGameOver(true);
+      return;
+    }
+    setCurrentPiece(newPiece);
+    setNextPiece(getRandomTetromino());
+  }, [level, board, currentPiece, nextPiece]);
 
   const movePiece = useCallback(
     (direction: "left" | "right" | "down") => {
       setCurrentPiece((prev) => {
         const newPosition = { ...prev.position };
-        if (direction === "left") {
-          newPosition.x -= 1;
-        } else if (direction === "right") {
-          newPosition.x += 1;
-        } else if (direction === "down") {
-          newPosition.y += 1;
-        }
+        if (direction === "left") newPosition.x -= 1;
+        if (direction === "right") newPosition.x += 1;
+        if (direction === "down") newPosition.y += 1;
 
         if (!checkCollision(prev.shape, board, newPosition)) {
           return { ...prev, position: newPosition };
         }
 
-        // If moving down and a collision occurs, lock the piece
         if (direction === "down") {
           lockPiece();
         }
@@ -122,24 +107,21 @@ const GameBoard: React.FC = () => {
     [board, lockPiece]
   );
 
-  // Function to rotate the piece
   const rotatePiece = useCallback(() => {
     setCurrentPiece((prev) => {
       const rotatedShape = rotateTetromino(prev.shape);
-
-      // Check for collision after rotation
       if (!checkCollision(rotatedShape, board, prev.position)) {
         return { ...prev, shape: rotatedShape };
       }
-
       return prev; // Revert to previous state if collision occurs
     });
   }, [board]);
 
-  // Handle keyboard input
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       e.preventDefault();
+      if (gameOver || !running) return;
+
       if (e.key === "ArrowLeft") movePiece("left");
       if (e.key === "ArrowRight") movePiece("right");
       if (e.key === "ArrowDown") movePiece("down");
@@ -148,13 +130,16 @@ const GameBoard: React.FC = () => {
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [movePiece, rotatePiece]);
+  }, [movePiece, rotatePiece, running, gameOver]);
 
   useEffect(() => {
     let animationFrameId: number;
+
     const gameLoop = (currentTime: number) => {
-      if (!running) return;
+      if (gameOver || !running) return;
+
       const elapsedTime = currentTime - lastAnimationFrame;
+
       if (elapsedTime > speed) {
         movePiece("down");
         setLastAnimationFrame(currentTime);
@@ -165,38 +150,46 @@ const GameBoard: React.FC = () => {
     animationFrameId = requestAnimationFrame(gameLoop);
 
     return () => cancelAnimationFrame(animationFrameId);
-  }, [lastAnimationFrame, running, speed, movePiece]);
+  }, [lastAnimationFrame, running, gameOver, speed, movePiece]);
 
   return (
     <>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateRows: `repeat(${board.length}, 1fr)`,
-          gridTemplateColumns: `repeat(${board[0].length}, 1fr)`,
-          gap: "1px",
-          backgroundColor: "#000",
-          border: "2px solid #333",
-          width: "200px",
-          height: "400px",
-        }}
-      >
-        {drawPieceOnBoard().map((row, rowIdx) =>
-          row.map((cell, colIdx) => (
-            <div
-              key={`${rowIdx}-${colIdx}`}
-              style={{
-                width: "100%",
-                height: "100%",
-                backgroundColor: cell ?? "#cca", // Use cell color or default
-              }}
-            ></div>
-          ))
+      <div className="gameboard">
+        {board.map((row, i) =>
+          row.map((cell, j) => {
+            const isCurrentPieceCell = currentPiece.shape.some(
+              (pieceRow, pieceRowIdx) =>
+                pieceRow.some(
+                  (pieceCell, pieceCellIdx) =>
+                    pieceCell !== 0 &&
+                    currentPiece.position.y + pieceRowIdx === i &&
+                    currentPiece.position.x + pieceCellIdx === j
+                )
+            );
+
+            return (
+              <div
+                key={`${i}-${j}`}
+                className={`cell ${isCurrentPieceCell ? "active" : ""}`}
+                style={{
+                  backgroundColor: isCurrentPieceCell
+                    ? currentPiece.color
+                    : cell ?? "transparent",
+                }}
+              ></div>
+            );
+          })
         )}
       </div>
-      <p>Lines Cleared: {clearedLines}</p>
+      <PreviewPiece shape={nextPiece.shape} color={nextPiece.color} />
+      <p>Lines cleared: {clearedLines}</p>
+      <p>Level: {level}</p>
+      {gameOver && <div className="game-over">Game Over</div>}
+      <div className="pause-button-container">
+        <button onClick={() => setRunning(!running)} className="pause-button">
+          {running ? "Pause" : "Resume"}
+        </button>
+      </div>
     </>
   );
-};
-
-export default GameBoard;
+}

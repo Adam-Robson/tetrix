@@ -4,11 +4,8 @@ import GameBoard from "./components/GameBoard";
 function App() {
   return (
     <div className="app">
-      <div>
-        <h1>
-          <GameBoard />
-        </h1>
-      </div>
+      <h1>Tetriz</h1>
+      <GameBoard />
       <div className="card">
         <p>
           Welcome to Tetriz - a simple Tetris clone built with Vite, TypeScript,

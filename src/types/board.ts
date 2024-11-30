@@ -1,5 +1,5 @@
-export type Cell = string | null;
+export type TCell = string | null;
 
-export type Row = Cell[];
+export type TRow = TCell[];
 
-export type Board = Row[];
+export type TBoard = TRow[];
