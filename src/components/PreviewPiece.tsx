@@ -1,24 +1,25 @@
+import React from "react";
+import "./preview-piece.css";
+
 interface PreviewPieceProps {
   shape: number[][];
   color: string;
 }
 
-import "./preview-piece.css";
+const PreviewPiece: React.FC<PreviewPieceProps> = ({ shape, color }) => (
+  <div className="preview-piece">
+    {shape.map((row, rowIndex) =>
+      row.map((cell, colIndex) => (
+        <div
+          key={`${rowIndex}-${colIndex}`}
+          className={`preview-cell ${cell !== 0 ? "active" : ""}`}
+          style={{
+            backgroundColor: cell !== 0 ? color : "transparent",
+          }}
+        ></div>
+      ))
+    )}
+  </div>
+);
 
-export default function PreviewPiece({ shape, color }: PreviewPieceProps) {
-  return (
-    <div className="preview-piece">
-      {shape.map((row, rowIdx) =>
-        row.map((cell, colIdx) => (
-          <div
-            key={`${rowIdx}-${colIdx}`}
-            style={{
-              backgroundColor: cell !== 0 ? color : "#ddf45bff;",
-            }}
-            className="preview-cell"
-          ></div>
-        ))
-      )}
-    </div>
-  );
-}
+export default PreviewPiece;

@@ -16,15 +16,11 @@
   --primary: #685f74ff; /* chinese-violet */
   --secondary: #b07156ff; /* brown-sugar */
   --tertiary: #e3d26fff; /* citron */
-  --accent: #76877dff; /* battleship-gray */
-  --complement: #2d3142ff; /* gunmetal */
-
-  --atomic-tangerine: #ef946cff;
-  --ecru: #c4a77dff;
-  --cambridge-blue: #99c1b9ff;
-  --pear: #ddf45bff;
-  --thistle: #c9b1bdff;
-  --fulvous: #e8871eff;
+  --quaternary: #76877dff; /* battleship-gray */
+  --accent: #2d3142ff; /* gunmetal */
+  --i: #c4a77dff; /* ecru */
+  --ii: #c9b1bdff; /* thistle */
+  --iii: #ef946cff;
 }
 
 a {

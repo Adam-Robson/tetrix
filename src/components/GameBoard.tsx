@@ -2,14 +2,17 @@ import { useState, useEffect, useCallback } from "react";
 import type { TBoard } from "../types/board";
 import type { TTetromino } from "../types/tetromino";
 import { getRandomTetromino, rotateTetromino } from "../utils/tetromino";
-import { createEmptyBoard } from "../utils/board";
-import { checkCollision } from "../utils/board";
-import { clearFullLines } from "../utils/board";
+import {
+  createEmptyBoard,
+  checkCollision,
+  clearFullLines,
+} from "../utils/board";
 import { calculateSpeed } from "../utils/game";
 import PreviewPiece from "./PreviewPiece";
+import Controls from "./Controls";
 import "./gameboard.css";
 
-export default function GameBoard() {
+const GameBoard: React.FC = () => {
   const [board, setBoard] = useState<TBoard>(createEmptyBoard());
   const [speed, setSpeed] = useState<number>(1000);
   const [level, setLevel] = useState<number>(1);
@@ -30,60 +33,52 @@ export default function GameBoard() {
 
   const lockPiece = useCallback(() => {
     setBoard((prevBoard) => {
-      const updatedGameBoard = [...prevBoard].map((row) => [...row]); // Deep copy
+      const updatedBoard = [...prevBoard].map((row) => [...row]);
 
-      currentPiece.shape.forEach((row, i) => {
-        row.forEach((cell, j) => {
+      currentPiece.shape.forEach((row, rowIdx) => {
+        row.forEach((cell, colIdx) => {
           if (cell !== 0) {
-            const boardY = currentPiece.position.y + i;
-            const boardX = currentPiece.position.x + j;
+            const boardY = currentPiece.position.y + rowIdx;
+            const boardX = currentPiece.position.x + colIdx;
 
             if (
               boardY >= 0 &&
-              boardY < updatedGameBoard.length &&
+              boardY < updatedBoard.length &&
               boardX >= 0 &&
-              boardX < updatedGameBoard[0].length
+              boardX < updatedBoard[0].length
             ) {
-              updatedGameBoard[boardY][boardX] = currentPiece.color;
+              updatedBoard[boardY][boardX] = currentPiece.color;
             }
           }
         });
       });
 
-      try {
-        const { newBoard, clearedRows } = clearFullLines(updatedGameBoard);
-        setClearedLines((prevLines) => {
-          const totalClearedLines = prevLines + clearedRows;
+      const { newBoard, clearedRows } = clearFullLines(updatedBoard);
+      setClearedLines((prev) => {
+        const totalCleared = prev + clearedRows;
+        if (Math.floor(totalCleared / 10) > level - 1) {
+          setLevel((prevLevel) => prevLevel + 1);
+          setSpeed(calculateSpeed(level + 1));
+        }
+        return totalCleared;
+      });
 
-          if (Math.floor(totalClearedLines / 10) > level - 1) {
-            setLevel((prevLevel) => prevLevel + 1);
-            setSpeed(calculateSpeed(level + 1)); // Adjust speed based on new level
-          }
-
-          return totalClearedLines;
-        });
-        return newBoard;
-      } catch (error) {
-        console.error("Error clearing full lines:", error);
-        return prevBoard;
-      }
+      return newBoard;
     });
 
     const newPiece = {
       ...nextPiece,
-      position: {
-        x: 4,
-        y: 0,
-      },
+      position: { x: 4, y: 0 },
     };
 
     if (checkCollision(newPiece.shape, board, newPiece.position)) {
       setGameOver(true);
       return;
     }
+
     setCurrentPiece(newPiece);
     setNextPiece(getRandomTetromino());
-  }, [level, board, currentPiece, nextPiece]);
+  }, [board, currentPiece, nextPiece, level]);
 
   const movePiece = useCallback(
     (direction: "left" | "right" | "down") => {
@@ -97,10 +92,7 @@ export default function GameBoard() {
           return { ...prev, position: newPosition };
         }
 
-        if (direction === "down") {
-          lockPiece();
-        }
-
+        if (direction === "down") lockPiece();
         return prev;
       });
     },
@@ -113,19 +105,25 @@ export default function GameBoard() {
       if (!checkCollision(rotatedShape, board, prev.position)) {
         return { ...prev, shape: rotatedShape };
       }
-      return prev; // Revert to previous state if collision occurs
+      return prev;
     });
   }, [board]);
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      e.preventDefault();
-      if (gameOver || !running) return;
+      if (gameOver) return;
 
-      if (e.key === "ArrowLeft") movePiece("left");
-      if (e.key === "ArrowRight") movePiece("right");
-      if (e.key === "ArrowDown") movePiece("down");
-      if (e.key === "ArrowUp") rotatePiece();
+      if (e.code === "Space") {
+        e.preventDefault();
+        setRunning((prev) => !prev);
+      }
+
+      if (running) {
+        if (e.key === "ArrowLeft") movePiece("left");
+        if (e.key === "ArrowRight") movePiece("right");
+        if (e.key === "ArrowDown") movePiece("down");
+        if (e.key === "ArrowUp") rotatePiece();
+      }
     };
 
     window.addEventListener("keydown", handleKeyPress);
@@ -139,7 +137,6 @@ export default function GameBoard() {
       if (gameOver || !running) return;
 
       const elapsedTime = currentTime - lastAnimationFrame;
-
       if (elapsedTime > speed) {
         movePiece("down");
         setLastAnimationFrame(currentTime);
@@ -148,29 +145,34 @@ export default function GameBoard() {
     };
 
     animationFrameId = requestAnimationFrame(gameLoop);
-
     return () => cancelAnimationFrame(animationFrameId);
   }, [lastAnimationFrame, running, gameOver, speed, movePiece]);
 
   return (
-    <>
+    <div className="gameboard-container">
+      <Controls
+        running={running}
+        setRunning={setRunning}
+        clearedLines={clearedLines}
+        level={level}
+        gameOver={gameOver}
+      />
       <div className="gameboard">
         {board.map((row, i) =>
           row.map((cell, j) => {
-            const isCurrentPieceCell = currentPiece.shape.some(
-              (pieceRow, pieceRowIdx) =>
-                pieceRow.some(
-                  (pieceCell, pieceCellIdx) =>
-                    pieceCell !== 0 &&
-                    currentPiece.position.y + pieceRowIdx === i &&
-                    currentPiece.position.x + pieceCellIdx === j
-                )
+            const isCurrentPieceCell = currentPiece.shape.some((r, p) =>
+              r.some(
+                (value, c) =>
+                  value !== 0 &&
+                  currentPiece.position.y + p === i &&
+                  currentPiece.position.x + c === j
+              )
             );
 
             return (
               <div
                 key={`${i}-${j}`}
-                className={`cell ${isCurrentPieceCell ? "active" : ""}`}
+                className="cell"
                 style={{
                   backgroundColor: isCurrentPieceCell
                     ? currentPiece.color
@@ -182,14 +184,8 @@ export default function GameBoard() {
         )}
       </div>
       <PreviewPiece shape={nextPiece.shape} color={nextPiece.color} />
-      <p>Lines cleared: {clearedLines}</p>
-      <p>Level: {level}</p>
-      {gameOver && <div className="game-over">Game Over</div>}
-      <div className="pause-button-container">
-        <button onClick={() => setRunning(!running)} className="pause-button">
-          {running ? "Pause" : "Resume"}
-        </button>
-      </div>
-    </>
+    </div>
   );
-}
+};
+
+export default GameBoard;
