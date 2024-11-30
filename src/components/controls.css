@@ -1,25 +1,14 @@
 .controls {
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: space-between;
   justify-content: flex-start;
   gap: 0.6rem;
   padding: 1.17rem;
-  border: solid 1px peachpuff;
-}
-
-.buttons-container {
-  border: solid 1px peachpuff;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  gap: 0.6rem;
 }
 
 .stats-container {
-  border: solid 1px peachpuff;
   width: 100%;
   height: 100%;
   display: flex;
@@ -29,6 +18,8 @@
 }
 
 .start-button {
+  max-width: 11rem;
+  margin: 0 auto;
   padding: 0.6rem 1.2rem;
   font-size: 1.13rem;
   border: none;
@@ -37,12 +28,7 @@
   transition: background-color 0.3s ease;
 }
 
-.pause-button:disabled {
-  cursor: not-allowed;
-}
-
-.start-button:hover,
-.pause-button:hover {
+.start-button:hover {
   background-color: #333;
 }
 
@@ -53,7 +39,6 @@
   margin: 10px 0;
 }
 
-.paused-overlay,
 .game-over-overlay {
   position: absolute;
   top: 0;

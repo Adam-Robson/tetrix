@@ -4,7 +4,7 @@ import GameBoard from "./components/GameBoard";
 function App() {
   return (
     <div className="app">
-      <h1>Tetriz</h1>
+      <h1 className="tetriz-title">Tetriz</h1>
       <GameBoard />
       <div className="card">
         <p>

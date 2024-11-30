@@ -156,6 +156,8 @@ const GameBoard: React.FC = () => {
         level={level}
         gameOver={gameOver}
       />
+      <h3>Next Piece</h3>
+      <PreviewPiece shape={nextPiece.shape} color={nextPiece.color} />
       <div className="gameboard">
         {board.map((row, i) =>
           row.map((cell, j) => {
@@ -182,7 +184,6 @@ const GameBoard: React.FC = () => {
           })
         )}
       </div>
-      <PreviewPiece shape={nextPiece.shape} color={nextPiece.color} />
     </div>
   );
 };
