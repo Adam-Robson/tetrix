@@ -31,6 +31,8 @@ const Controls: React.FC<IControlsProps> = ({
   return (
     <div className="controls">
       {gameOver && <div className="game-over">Game Over</div>}
+      <p className="instructions-title">Click Start to begin the game.</p>
+
       <button
         className="start-button"
         onClick={running ? resetGame : handleStartGame}

@@ -9,7 +9,6 @@ function App() {
           Tetriz is a Tetris clone built with Vite, in TypeScript, using React.
         </p>
         <section className="game-area-container">
-          <p className="tetriz-greeting">Click Start to begin the game.</p>
           <ol className="tetriz-instructions">
             <li>Use the left and right arrow keys to move the piece.</li>
             <li>Use the up arrow key to rotate the piece.</li>
