@@ -1,12 +1,14 @@
 .gameboard-container {
+  border-radius: 0.5rem;
+  border: 3px solid var(--text);
+  margin: 1.1rem;
+  padding: 0 1.43rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  max-width: 500px;
+  justify-content: space-between;
   width: 100%;
-  margin: 0 auto;
-  height: 100%;
+  margin: 1rem auto;
 }
 
 .gameboard {
@@ -14,11 +16,11 @@
   grid-template-rows: repeat(20, 1fr);
   grid-template-columns: repeat(10, 1fr);
   grid-gap: 0.15rem;
-  background-color: var(--background);
-  color: var(--text);
+  background-color: var(--tertiary);
   border-radius: 0.5rem;
   width: 320px;
   height: 578px;
+  margin: 0.86rem;
 }
 
 .gameboard.paused {
@@ -30,33 +32,4 @@
   width: 100%;
   height: 100%;
   background-color: #cca;
-}
-
-.start-button {
-  margin: 20px auto;
-  padding: 10px 20px;
-  font-size: 18px;
-  cursor: pointer;
-  background-color: #444;
-  color: white;
-  border: none;
-  border-radius: 5px;
-}
-.start-button:hover {
-  background-color: #666;
-}
-
-.pause-button-container {
-  margin-top: 1.4rem;
-  text-align: center;
-}
-
-.pause-button {
-  font-size: 1rem;
-  padding: 10px 20px;
-  cursor: pointer;
-  border: none;
-  border-radius: 6px;
-  color: var(--text);
-  background-color: var(--secondary);
 }

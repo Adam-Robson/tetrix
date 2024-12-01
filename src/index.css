@@ -1,67 +1,174 @@
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 :root {
   font-family: Inter, system-ui, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: var(--text);
-  background-color: var(--background);
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --text: #eae8ffff; /* lavender-web */
-  --background: #3c3744ff; /* jet */
-  --primary: #685f74ff; /* chinese-violet */
-  --secondary: #b07156ff; /* brown-sugar */
-  --tertiary: #e3d26fff; /* citron */
-  --quaternary: #76877dff; /* battleship-gray */
-  --accent: #2d3142ff; /* gunmetal */
-  --i: #c4a77dff; /* ecru */
-  --ii: #c9b1bdff; /* thistle */
-  --iii: #ef946cff;
+
+  /* --alice: #e8f1f2ff;
+  --alice: hsla(186, 28%, 93%, 1);
+
+  --beaver: #96897bff;
+  --beaver: hsla(31, 11%, 54%, 1);
+
+  --buff: #cf995fff;
+  --buff: hsla(31, 54%, 59%, 1);
+
+  --chestnut: #a44a3fff;
+  --chestnut: hsla(7, 44%, 45%, 1);
+
+  --cadet: #9cafb7ff;
+  --cadet: hsla(191, 16%, 66%, 1);
+
+  --cambridge: #94a89aff;
+  --cambridge: hsla(138, 10%, 62%, 1);
+
+  --airforce: #628395ff;
+  --airforce: hsla(201, 21%, 48%, 1);
+
+  --rich: #031927ff;
+  --rich: hsla(203, 86%, 8%, 1);
+
+  --jet: #353238ff;
+  --jet: hsla(270, 6%, 21%, 1); */
+
+  --text: hsla(270, 6%, 21%, 1);
+  --background: hsla(186, 28%, 93%, 1);
+  --primary: hsla(203, 86%, 8%, 1);
+  --secondary: hsla(191, 16%, 66%, 1);
+  --tertiary: hsla(201, 21%, 48%, 1);
+  --quaternary: hsla(138, 10%, 62%, 1);
+  --accent: hsla(7, 44%, 45%, 1);
+  --highlight: hsla(31, 54%, 59%, 1);
+  --complement: hsla(31, 11%, 54%, 1);
+}
+
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    --text: hsla(186, 28%, 93%, 1);
+    --background: hsla(270, 6%, 21%, 1);
+    --primary: hsla(201, 21%, 48%, 1);
+    --secondary: hsla(138, 10%, 62%, 1);
+    --tertiary: hsla(203, 86%, 8%, 1);
+    --quaternary: hsla(191, 16%, 66%, 1);
+    --accent: hsla(7, 44%, 45%, 1);
+    --highlight: hsla(31, 54%, 59%, 1);
+    --complement: hsla(31, 11%, 54%, 1);
+  }
+}
+
+body {
+  color: var(--text);
+  background-color: var(--tertiary);
+  margin: 0 auto;
+  max-width: 1280px;
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.app {
+  min-width: 320px;
+  width: 100%;
+  margin: 0 auto;
+  max-width: 100dvw;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 a {
   font-weight: 500;
-  color: var(--tertiary);
+  color: var(--primary);
   text-decoration: none;
 }
 
 a:hover {
   color: var(--text);
   text-decoration: underline;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  transition: color 0.4s ease-in-out;
 }
 
 button {
+  min-width: 7rem;
+  max-width: 7rem;
+  min-height: 3rem;
+  max-height: 3rem;
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: var(--background);
-  color: var(--text);
   cursor: pointer;
   transition: border-color 0.25s;
 }
 
 button:hover {
-  border-color: var(--text);
+  border-color: var(--primary);
 }
 
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 4px auto var(--accent);
+}
+
+.tetriz-container {
+  background-color: var(--text);
+  color: var(--tertiary);
+  padding: 1rem;
+  margin: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  place-items: center;
+  border-radius: 8px;
+}
+
+.tetriz-title {
+  font-weight: 300;
+  font-size: 3.14rem;
+  letter-spacing: 8px;
+}
+
+.tetriz-greeting {
+  font-weight: 300;
+  font-size: 1.22rem;
+  letter-spacing: 0.105rem;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.game-area-container {
+  background-color: var(--background);
+  color: var(--text);
+  padding: 1.67rem;
+  margin: 2rem;
+  border-radius: 8px;
+}
+
+.tetriz-instructions {
+  padding: 0 1.8rem;
+  font-weight: 300;
+  font-size: 0.79rem;
+  letter-spacing: 0.105rem;
+  font-style: italic;
+  text-align: left;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 @media (prefers-color-scheme: light) {

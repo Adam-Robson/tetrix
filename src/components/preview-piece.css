@@ -1,23 +1,19 @@
 .preview-piece {
+  border-radius: 0.5rem;
+  color: var(--text);
   display: grid;
   justify-content: center;
   align-items: center;
-  gap: 2px; /* Add spacing between cells if needed */
-  width: 100px; /* Define a fixed width for preview */
-  height: 100px; /* Define a fixed height for preview */
-  grid-template-columns: repeat(
-    6,
-    1fr
-  ); /* Dynamically adapt to tetromino size */
+  gap: 0.16rem;
+  width: 100px;
+  height: 100px;
+  grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(6, 1fr);
+  margin-top: 0.44rem;
 }
 
 .preview-cell {
   width: 100%; /* Scale with the grid */
   height: 100%; /* Scale with the grid */
   background-color: transparent; /* Default background */
-}
-
-.preview-cell.active {
-  background-color: var(--your-active-color); /* Color for active cells */
 }

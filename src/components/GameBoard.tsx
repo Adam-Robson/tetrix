@@ -8,7 +8,6 @@ import {
   clearFullLines,
 } from "../utils/board";
 import { calculateSpeed } from "../utils/game";
-import PreviewPiece from "./PreviewPiece";
 import Controls from "./Controls";
 import "./gameboard.css";
 
@@ -185,30 +184,16 @@ const GameBoard: React.FC = () => {
   return (
     <div className="gameboard-container">
       <Controls
+        paused={paused}
+        togglePause={togglePause}
+        resetGame={resetGame}
+        handleStartGame={handleStartGame}
         running={running}
-        setRunning={setRunning}
         clearedLines={clearedLines}
         level={level}
         gameOver={gameOver}
+        nextPiece={nextPiece}
       />
-
-      {!running && gameOver && (
-        <button className="start-button" onClick={handleStartGame}>
-          Start Game
-        </button>
-      )}
-
-      {running && (
-        <div className="game-controls">
-          <button className="pause-button" onClick={togglePause}>
-            {paused ? "Resume" : "Pause"}
-          </button>
-          <button className="reset-button" onClick={resetGame}>
-            Reset
-          </button>
-        </div>
-      )}
-
       <div className={`gameboard ${paused ? "paused" : ""}`}>
         {board.map((row, i) =>
           row.map((cell, j) => {
@@ -235,7 +220,6 @@ const GameBoard: React.FC = () => {
           })
         )}
       </div>
-      <PreviewPiece shape={nextPiece.shape} color={nextPiece.color} />
     </div>
   );
 };

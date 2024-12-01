@@ -1,35 +1,58 @@
 import React from "react";
 import "./controls.css";
+import PreviewPiece from "./PreviewPiece";
 
 interface IControlsProps {
+  paused?: boolean;
+  togglePause?: () => void;
+  resetGame: () => void;
   running: boolean;
-  setRunning: (running: boolean) => void;
   clearedLines: number;
   level: number;
   gameOver: boolean;
+  nextPiece: {
+    shape: number[][];
+    color: string;
+  };
+  handleStartGame: () => void;
 }
 
 const Controls: React.FC<IControlsProps> = ({
+  paused,
+  togglePause,
+  resetGame,
   running,
-  setRunning,
   clearedLines,
   level,
   gameOver,
+  nextPiece,
+  handleStartGame,
 }) => {
-  const handleStart = () => {
-    setRunning(true);
-  };
-
   return (
     <div className="controls">
       {gameOver && <div className="game-over">Game Over</div>}
-      <button className="start-button" onClick={handleStart} disabled={running}>
-        Start
+      <button
+        className="start-button"
+        onClick={running ? resetGame : handleStartGame}
+      >
+        {running ? "Reset" : "Start"}
       </button>
-      <div className="stats-container">
-        <p>Lines cleared: {clearedLines}</p>
-        <p>Level: {level}</p>
+
+      <div className="game-controls">
+        {running && (
+          <button className="pause-button" onClick={togglePause}>
+            {paused ? "Resume" : "Pause"}
+          </button>
+        )}
       </div>
+
+      <section className="meta-container">
+        <div className="stats-container">
+          <p>Lines cleared: {clearedLines}</p>
+          <p>Level: {level}</p>
+        </div>
+        <PreviewPiece shape={nextPiece.shape} color={nextPiece.color} />
+      </section>
     </div>
   );
 };
