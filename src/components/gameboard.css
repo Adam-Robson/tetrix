@@ -21,10 +21,29 @@
   height: 578px;
 }
 
+.gameboard.paused {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .cell {
   width: 100%;
   height: 100%;
   background-color: #cca;
+}
+
+.start-button {
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+.start-button:hover {
+  background-color: #666;
 }
 
 .pause-button-container {

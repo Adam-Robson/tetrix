@@ -18,6 +18,7 @@ const GameBoard: React.FC = () => {
   const [level, setLevel] = useState<number>(1);
   const [lastAnimationFrame, setLastAnimationFrame] = useState<number>(0);
   const [running, setRunning] = useState<boolean>(false);
+  const [paused, setPaused] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [clearedLines, setClearedLines] = useState<number>(0);
   const [currentPiece, setCurrentPiece] = useState<{
@@ -29,15 +30,46 @@ const GameBoard: React.FC = () => {
     getRandomTetromino()
   );
 
+  const resetGame = () => {
+    // Reset game to initial state
+    setBoard(createEmptyBoard());
+    setSpeed(1000);
+    setLevel(1);
+    setLastAnimationFrame(0);
+    setRunning(false);
+    setPaused(false);
+    setGameOver(false);
+    setClearedLines(0);
+    setCurrentPiece({ ...getRandomTetromino(), position: { x: 4, y: 0 } });
+    setNextPiece(getRandomTetromino());
+  };
+
+  const handleStartGame = () => {
+    setRunning(true);
+    setPaused(false);
+    setGameOver(false);
+    setBoard(createEmptyBoard());
+    setCurrentPiece({ ...getRandomTetromino(), position: { x: 4, y: 0 } });
+    setNextPiece(getRandomTetromino());
+    setClearedLines(0);
+    setLevel(1);
+    setSpeed(1000);
+  };
+
+  const togglePause = () => {
+    if (!running) return; // Can't pause if the game isn't running
+    setPaused((prev) => !prev);
+  };
+
   const lockPiece = useCallback(() => {
     setBoard((prevBoard) => {
       const updatedBoard = [...prevBoard].map((row) => [...row]);
 
-      currentPiece.shape.forEach((row, rowIdx) => {
-        row.forEach((cell, colIdx) => {
+      currentPiece.shape.forEach((row, i) => {
+        row.forEach((cell, j) => {
           if (cell !== 0) {
-            const boardY = currentPiece.position.y + rowIdx;
-            const boardX = currentPiece.position.x + colIdx;
+            const boardY = currentPiece.position.y + i;
+            const boardX = currentPiece.position.x + j;
 
             if (
               boardY >= 0 &&
@@ -107,33 +139,36 @@ const GameBoard: React.FC = () => {
     });
   }, [board]);
 
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
+  const handleKeyPress = useCallback(
+    (e: KeyboardEvent) => {
       if (gameOver) return;
 
       if (e.code === "Space") {
         e.preventDefault();
-        setRunning((prev) => !prev);
+        if (running) setPaused((prev) => !prev);
       }
 
-      if (running) {
+      if (running && !paused) {
         e.preventDefault();
         if (e.key === "ArrowLeft") movePiece("left");
         if (e.key === "ArrowRight") movePiece("right");
         if (e.key === "ArrowDown") movePiece("down");
         if (e.key === "ArrowUp") rotatePiece();
       }
-    };
+    },
+    [gameOver, running, paused, movePiece, rotatePiece]
+  );
 
-    window.addEventListener("keydown", handleKeyPress);
-    return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [movePiece, rotatePiece, running, gameOver]);
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyPress);
+    return () => document.removeEventListener("keydown", handleKeyPress);
+  }, [handleKeyPress]);
 
   useEffect(() => {
     let animationFrameId: number;
 
     const gameLoop = (currentTime: number) => {
-      if (gameOver || !running) return;
+      if (gameOver || !running || paused) return;
 
       const elapsedTime = currentTime - lastAnimationFrame;
       if (elapsedTime > speed) {
@@ -145,7 +180,7 @@ const GameBoard: React.FC = () => {
 
     animationFrameId = requestAnimationFrame(gameLoop);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [lastAnimationFrame, running, gameOver, speed, movePiece]);
+  }, [lastAnimationFrame, running, gameOver, speed, paused, movePiece]);
 
   return (
     <div className="gameboard-container">
@@ -156,9 +191,25 @@ const GameBoard: React.FC = () => {
         level={level}
         gameOver={gameOver}
       />
-      <h3>Next Piece</h3>
-      <PreviewPiece shape={nextPiece.shape} color={nextPiece.color} />
-      <div className="gameboard">
+
+      {!running && gameOver && (
+        <button className="start-button" onClick={handleStartGame}>
+          Start Game
+        </button>
+      )}
+
+      {running && (
+        <div className="game-controls">
+          <button className="pause-button" onClick={togglePause}>
+            {paused ? "Resume" : "Pause"}
+          </button>
+          <button className="reset-button" onClick={resetGame}>
+            Reset
+          </button>
+        </div>
+      )}
+
+      <div className={`gameboard ${paused ? "paused" : ""}`}>
         {board.map((row, i) =>
           row.map((cell, j) => {
             const isCurrentPieceCell = currentPiece.shape.some((r, p) =>
@@ -184,6 +235,7 @@ const GameBoard: React.FC = () => {
           })
         )}
       </div>
+      <PreviewPiece shape={nextPiece.shape} color={nextPiece.color} />
     </div>
   );
 };
