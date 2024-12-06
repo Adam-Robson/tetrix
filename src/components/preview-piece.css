@@ -1,0 +1,19 @@
+.preview-piece {
+  border-radius: 0.5rem;
+  color: var(--text);
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  gap: 0.16rem;
+  width: 100px;
+  height: 100px;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  margin-top: 0.44rem;
+}
+
+.preview-cell {
+  width: 100%; /* Scale with the grid */
+  height: 100%; /* Scale with the grid */
+  background-color: transparent; /* Default background */
+}

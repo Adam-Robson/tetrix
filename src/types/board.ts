@@ -1,5 +1,4 @@
-export type Cell = string | null;
+import { TCell } from "./tetromino";
 
-export type Row = Cell[];
-
-export type Board = Row[];
+export type TRow = TCell[];
+export type TBoard = TRow[];
