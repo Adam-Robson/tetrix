@@ -1,25 +1,24 @@
 import { useState, useEffect, useCallback } from "react";
-import type { TBoard } from "../types/board";
 import type { TTetromino } from "../types/tetromino";
 import { getRandomTetromino, rotateTetromino } from "../utils/tetromino";
+import { TBoard } from "../types/board";
 import {
-  createEmptyBoard,
   checkCollision,
+  createEmptyBoard,
   clearFullLines,
 } from "../utils/board";
 import { calculateSpeed } from "../utils/game";
-import Controls from "./Controls";
-import "./gameboard.css";
 
-const GameBoard: React.FC = () => {
+export default function useTetromino() {
   const [board, setBoard] = useState<TBoard>(createEmptyBoard());
-  const [speed, setSpeed] = useState<number>(1000);
   const [level, setLevel] = useState<number>(1);
-  const [lastAnimationFrame, setLastAnimationFrame] = useState<number>(0);
-  const [running, setRunning] = useState<boolean>(false);
+  const [score, setScore] = useState<number>(0);
+  const [speed, setSpeed] = useState<number>(1000);
   const [paused, setPaused] = useState<boolean>(false);
+  const [running, setRunning] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [clearedLines, setClearedLines] = useState<number>(0);
+  const [lastAnimationFrame, setLastAnimationFrame] = useState<number>(0);
   const [currentPiece, setCurrentPiece] = useState<{
     shape: number[][];
     color: string;
@@ -55,10 +54,10 @@ const GameBoard: React.FC = () => {
     setSpeed(1000);
   };
 
-  const togglePause = () => {
-    if (!running) return; // Can't pause if the game isn't running
+  function togglePause() {
+    if (!running) return;
     setPaused((prev) => !prev);
-  };
+  }
 
   const lockPiece = useCallback(() => {
     setBoard((prevBoard) => {
@@ -159,11 +158,6 @@ const GameBoard: React.FC = () => {
   );
 
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyPress);
-    return () => document.removeEventListener("keydown", handleKeyPress);
-  }, [handleKeyPress]);
-
-  useEffect(() => {
     let animationFrameId: number;
 
     const gameLoop = (currentTime: number) => {
@@ -181,47 +175,42 @@ const GameBoard: React.FC = () => {
     return () => cancelAnimationFrame(animationFrameId);
   }, [lastAnimationFrame, running, gameOver, speed, paused, movePiece]);
 
-  return (
-    <div className="gameboard-container">
-      <Controls
-        paused={paused}
-        togglePause={togglePause}
-        resetGame={resetGame}
-        handleStartGame={handleStartGame}
-        running={running}
-        clearedLines={clearedLines}
-        level={level}
-        gameOver={gameOver}
-        nextPiece={nextPiece}
-      />
-      <div className={`gameboard ${paused ? "paused" : ""}`}>
-        {board.map((row, i) =>
-          row.map((cell, j) => {
-            const isCurrentPieceCell = currentPiece.shape.some((r, p) =>
-              r.some(
-                (value, c) =>
-                  value !== 0 &&
-                  currentPiece.position.y + p === i &&
-                  currentPiece.position.x + c === j
-              )
-            );
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyPress);
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
-            return (
-              <div
-                key={`${i}-${j}`}
-                className="cell"
-                style={{
-                  backgroundColor: isCurrentPieceCell
-                    ? currentPiece.color
-                    : cell ?? "transparent",
-                }}
-              ></div>
-            );
-          })
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default GameBoard;
+  return {
+    board,
+    level,
+    score,
+    speed,
+    paused,
+    running,
+    gameOver,
+    clearedLines,
+    lastAnimationFrame,
+    currentPiece,
+    nextPiece,
+    resetGame,
+    handleStartGame,
+    setBoard,
+    setLevel,
+    setScore,
+    setSpeed,
+    setPaused,
+    setRunning,
+    setGameOver,
+    setClearedLines,
+    setLastAnimationFrame,
+    setCurrentPiece,
+    setNextPiece,
+    togglePause,
+    lockPiece,
+    movePiece,
+    rotatePiece,
+    handleKeyPress,
+  };
+}

@@ -10,6 +10,7 @@
   font-family: Inter, system-ui, Helvetica, Arial, sans-serif;
   font-weight: 400;
   font-synthesis: none;
+  color-scheme: light dark;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -52,20 +53,6 @@
   --complement: hsla(31, 11%, 54%, 1);
 }
 
-@media screen and (prefers-color-scheme: dark) {
-  :root {
-    --text: hsla(186, 28%, 93%, 1);
-    --background: hsla(270, 6%, 21%, 1);
-    --primary: hsla(201, 21%, 48%, 1);
-    --secondary: hsla(138, 10%, 62%, 1);
-    --tertiary: hsla(203, 86%, 8%, 1);
-    --quaternary: hsla(191, 16%, 66%, 1);
-    --accent: hsla(7, 44%, 45%, 1);
-    --highlight: hsla(31, 54%, 59%, 1);
-    --complement: hsla(31, 11%, 54%, 1);
-  }
-}
-
 body {
   width: 100%;
   min-height: 100dvh;
@@ -87,10 +74,16 @@ a {
 a:hover {
   color: var(--secondary);
   text-decoration: underline;
-  transition: color 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
+}
+
+a:focus,
+a:focus-visible {
+  outline: 4px auto var(--accent);
 }
 
 button {
+  margin: 1rem 3rem;
   width: 7rem;
   height: 3rem;
   border-radius: 5px;
@@ -98,11 +91,11 @@ button {
   padding: 0.4em 1em;
   font-size: 1rem;
   cursor: pointer;
-  transition: border-color 0.25s;
 }
 
 button:hover {
-  border-color: var(--primary);
+  border-color: var(--secondary);
+  transition: all 0.4s ease-in-out;
 }
 
 button:focus,
@@ -111,54 +104,29 @@ button:focus-visible {
 }
 
 .tetriz-container {
-  background-color: var(--text);
-  margin: 0.55rem;
+  background-color: var(--background);
+  color: var(--text);
   place-items: center;
+  padding: 2rem 0;
+}
+
+.game-container {
+  background-color: var(--background);
+  color: var(--text);
   border-radius: 13px;
 }
 
-.tetriz-title {
-  color: var(--tertiary);
-  font-weight: 600;
-  font-size: 2.14rem;
-  letter-spacing: 8px;
-  padding-top: 1.67rem;
-}
-
-.tetriz-greeting {
-  font-weight: 300;
-  font-size: 1.22rem;
-  -webkit-font-smoothing: subpixel-antialiased;
-  padding-bottom: 1.67rem;
-}
-
-.game-area-container {
-  background-color: var(--text);
-  color: var(--background);
-  padding: 1.5rem;
-  border-radius: 13px;
-}
-
-.instructions-title {
-  font-weight: 400;
-  font-size: 0.88rem;
-  letter-spacing: 0.105rem;
-}
-
-.tetriz-instructions {
-  padding: 0 1.8rem;
-  font-weight: 300;
-  font-size: 0.88rem;
-  letter-spacing: 0.105rem;
-  font-style: italic;
-  text-align: left;
-  -webkit-font-smoothing: subpixel-antialiased;
-}
-
-@media (prefers-color-scheme: light) {
+@media screen and (prefers-color-scheme: dark) {
   :root {
-    color: var(--background);
-    background-color: var(--text);
+    --text: hsla(186, 28%, 93%, 1);
+    --background: hsla(270, 6%, 21%, 1);
+    --primary: hsla(201, 21%, 48%, 1);
+    --secondary: hsla(138, 10%, 62%, 1);
+    --tertiary: hsla(203, 86%, 8%, 1);
+    --quaternary: hsla(191, 16%, 66%, 1);
+    --accent: hsla(7, 44%, 45%, 1);
+    --highlight: hsla(31, 54%, 59%, 1);
+    --complement: hsla(31, 11%, 54%, 1);
   }
 
   a {
